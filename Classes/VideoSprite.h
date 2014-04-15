@@ -20,6 +20,14 @@
 #include <iostream>
 #include "cocos2d.h"
 
+typedef struct tVideoSampler
+{
+    const void* data;
+    ssize_t  dataLen;
+    GLint width;
+    GLint height;
+}VideoSampler;
+
 
 using cocos2d::Sprite;
 
@@ -31,6 +39,13 @@ public:
     static VideoSprite* createWithFile(const std::string& videoFileName);
     bool initWithFile(const std::string& videoFileName);
     void updateTexture(float dt);
+    
+    virtual void initVideoTrack(const std::string& videoFileName);
+    virtual void initAudioTrack(const std::string& videoFileName);
+    virtual VideoSampler getVideoNextSampleBuffer();
+    virtual float getVideoFrameRate();
+    virtual void playAudio();
+    virtual void rewindVideo();
     
 protected:
     void rewindAssetReader();

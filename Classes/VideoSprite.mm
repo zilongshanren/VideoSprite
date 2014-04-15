@@ -48,43 +48,30 @@ bool VideoSprite::initWithFile(const std::string &videoFileName)
             break;
         }
         
-        NSString *name = [NSString stringWithUTF8String:videoFileName.c_str()];
-        NSURL *fileURL = [[NSBundle mainBundle] URLForResource:name withExtension:nil];
-        asset = [AVURLAsset URLAssetWithURL:fileURL options:nil];
-        videoTrack = [[asset tracksWithMediaType:AVMediaTypeVideo] objectAtIndex:0];
+        this->initVideoTrack(videoFileName);
         
-        NSError *error  = [[NSError alloc] autorelease];
-        player = [[AVAudioPlayer alloc] initWithContentsOfURL:fileURL error:&error];
-        player.numberOfLoops = 0;
+        this->initAudioTrack(videoFileName);
         
         this->rewindAssetReader();
         
-        CMSampleBufferRef sampleBuffer = [trackOutput copyNextSampleBuffer];
-        CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
-        CVPixelBufferLockBaseAddress(imageBuffer,0);
-        /*Get information about the image*/
-        uint8_t *baseAddress = (uint8_t *)CVPixelBufferGetBaseAddress(imageBuffer);
-        size_t bytesPerRow = CVPixelBufferGetBytesPerRow(imageBuffer);
-        size_t width = CVPixelBufferGetWidth(imageBuffer);
-        size_t height = CVPixelBufferGetHeight(imageBuffer);
+        VideoSampler sampler = this->getVideoNextSampleBuffer();
+        
         
         Texture2D *texture = new Texture2D;
-        texture->initWithData(baseAddress,
-                              bytesPerRow * height,
+        texture->initWithData(sampler.data,
+                              sampler.dataLen,
                               Texture2D::PixelFormat::BGRA8888,
-                              (GLint)width,
-                              (GLint)height,
-                              cocos2d::Size(width,height));
+                              sampler.width,
+                              sampler.height,
+                              cocos2d::Size(sampler.width,sampler.height));
         texture->autorelease();
         
-        /*We unlock the  image buffer*/
-        CVPixelBufferUnlockBaseAddress(imageBuffer,0);
-         [(id)sampleBuffer release];
+      
         
-        this->initWithTexture(texture, cocos2d::Rect(0,0,width,height));
+        this->initWithTexture(texture, cocos2d::Rect(0,0,sampler.width,sampler.height));
         
         
-        float nominalFrameRate = videoTrack.nominalFrameRate;
+        float nominalFrameRate = this->getVideoFrameRate();
         
 
         this->schedule(schedule_selector(VideoSprite::updateTexture), 1.0 / nominalFrameRate);
@@ -92,39 +79,49 @@ bool VideoSprite::initWithFile(const std::string &videoFileName)
     return ret;
 }
 
-void VideoSprite::updateTexture(float dt)
+float VideoSprite::getVideoFrameRate()
 {
-   
+    float frameRate = videoTrack.nominalFrameRate;
+    return frameRate;
+}
+
+void VideoSprite::rewindVideo()
+{
     if (assetReader.status == AVAssetReaderStatusCompleted) {
         // this texture should repeat from the beginning
         this->rewindAssetReader();
     }
-    
-    CMSampleBufferRef sampleBuffer = [trackOutput copyNextSampleBuffer];
-    CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
-    CVPixelBufferLockBaseAddress(imageBuffer,0);
-    /*Get information about the image*/
-    uint8_t *baseAddress = (uint8_t *)CVPixelBufferGetBaseAddress(imageBuffer);
+}
 
-//    size_t bytesPerRow = CVPixelBufferGetBytesPerRow(imageBuffer);
-    size_t width = CVPixelBufferGetWidth(imageBuffer);
-    size_t height = CVPixelBufferGetHeight(imageBuffer);
+void VideoSprite::updateTexture(float dt)
+{
+   
+    this->rewindVideo();
+    
+    VideoSampler sampler = this->getVideoNextSampleBuffer();
     
     // update the texture
     glBindTexture(GL_TEXTURE_2D, this->getTexture()->getName());
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
-                 (GLint)width, (GLint)height,
-                 0, GL_BGRA,
-                 GL_UNSIGNED_BYTE, baseAddress);
-    /*We unlock the  image buffer*/
-    CVPixelBufferUnlockBaseAddress(imageBuffer,0);
-    [(id)sampleBuffer release];
+    glTexImage2D(GL_TEXTURE_2D,
+                 0,
+                 GL_RGBA,
+                 sampler.width,
+                 sampler.height,
+                 0,
+                 GL_BGRA,
+                 GL_UNSIGNED_BYTE,
+                 sampler.data);
     
 
-    if (![player isPlaying]) {
-            [player play];
-    }
+    this->playAudio();
     
+}
+
+void VideoSprite::playAudio()
+{
+    if (![player isPlaying]) {
+        [player play];
+    }
 }
 
 void VideoSprite::rewindAssetReader()
@@ -148,4 +145,45 @@ void VideoSprite::rewindAssetReader()
     [assetReader retain];
     [videoTrack retain];
     
+}
+
+void VideoSprite::initVideoTrack(const std::string& videoFileName)
+{
+    NSString *name = [NSString stringWithUTF8String:videoFileName.c_str()];
+    NSURL *fileURL = [[NSBundle mainBundle] URLForResource:name withExtension:nil];
+    asset = [AVURLAsset URLAssetWithURL:fileURL options:nil];
+    videoTrack = [[asset tracksWithMediaType:AVMediaTypeVideo] objectAtIndex:0];
+}
+
+void VideoSprite::initAudioTrack(const std::string& videoFileName)
+{
+    NSString *name = [NSString stringWithUTF8String:videoFileName.c_str()];
+    NSURL *fileURL = [[NSBundle mainBundle] URLForResource:name withExtension:nil];
+    NSError *error  = [[NSError alloc] autorelease];
+    player = [[AVAudioPlayer alloc] initWithContentsOfURL:fileURL error:&error];
+    player.numberOfLoops = 0;
+}
+
+VideoSampler VideoSprite::getVideoNextSampleBuffer()
+{
+    CMSampleBufferRef sampleBuffer = [trackOutput copyNextSampleBuffer];
+    CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
+    CVPixelBufferLockBaseAddress(imageBuffer,0);
+    /*Get information about the image*/
+    uint8_t *baseAddress = (uint8_t *)CVPixelBufferGetBaseAddress(imageBuffer);
+    size_t bytesPerRow = CVPixelBufferGetBytesPerRow(imageBuffer);
+    size_t width = CVPixelBufferGetWidth(imageBuffer);
+    size_t height = CVPixelBufferGetHeight(imageBuffer);
+    
+    VideoSampler sampler;
+    sampler.data = baseAddress;
+    sampler.dataLen = bytesPerRow * height;
+    sampler.width = (GLint)width;
+    sampler.height = (GLint)height;
+    
+    /*We unlock the  image buffer*/
+    CVPixelBufferUnlockBaseAddress(imageBuffer,0);
+    [(id)sampleBuffer release];
+    
+    return sampler;
 }

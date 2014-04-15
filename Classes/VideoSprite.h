@@ -20,17 +20,19 @@
 #include "cocos2d.h"
 
 
-using cocos2d::SpriteBatchNode;
+using cocos2d::Sprite;
 
-class VideoSprite : public SpriteBatchNode
+class VideoSprite : public Sprite
 {
 public:
     ~VideoSprite();
     
-    VideoSprite* createWithVideoFile(const std::string& videoFileName);
+    static VideoSprite* createWithVideoFile(const std::string& videoFileName);
     bool initWithVideoFile(const std::string& videoFileName);
     void updateTexture(float dt);
     
+    virtual void draw(cocos2d::Renderer *renderer, const kmMat4 &transform, bool transformUpdated) override;
+
 protected:
     void rewindAssetReader();
     

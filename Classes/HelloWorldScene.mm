@@ -27,8 +27,10 @@ bool HelloWorld::init()
     {
         return false;
     }
-    
-   
+    auto winsize = Director::getInstance()->getVisibleSize();
+    VideoSprite* sprite = VideoSprite::createWithVideoFile("nnnn.mp4");
+    sprite->setPosition(cocos2d::Point(winsize.width/2, winsize.height/2));
+    this->addChild(sprite);
     
     return true;
 }

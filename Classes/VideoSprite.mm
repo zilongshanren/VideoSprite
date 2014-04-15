@@ -7,7 +7,9 @@
 //
 
 #include "VideoSprite.h"
-
+#import <AVFoundation/AVMediaFormat.h>
+#import <AVFoundation/AVAssetTrack.h>
+using namespace cocos2d;
 
 VideoSprite::VideoSprite()
 {
@@ -39,6 +41,80 @@ bool VideoSprite::initWithVideoFile(const std::string &videoFileName)
             ret = false;
             break;
         }
+        
+        NSString *name = [NSString stringWithUTF8String:videoFileName.c_str()];
+        NSURL *fileURL = [[NSBundle mainBundle] URLForResource:name withExtension:nil];
+        asset = [AVURLAsset URLAssetWithURL:fileURL options:nil];
+        videoTrack = [[asset tracksWithMediaType:AVMediaTypeVideo] objectAtIndex:0];
+        
+        this->rewindAssetReader();
+        
+        CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer([trackOutput copyNextSampleBuffer]);
+        CVPixelBufferLockBaseAddress(imageBuffer,0);
+        /*Get information about the image*/
+        uint8_t *baseAddress = (uint8_t *)CVPixelBufferGetBaseAddress(imageBuffer);
+        size_t bytesPerRow = CVPixelBufferGetBytesPerRow(imageBuffer);
+        size_t width = CVPixelBufferGetWidth(imageBuffer);
+        size_t height = CVPixelBufferGetHeight(imageBuffer);
+        
+//        Texture2D *texture = [[[CCTexture2D alloc] initWithData:baseAddress
+//                                                      pixelFormat:kCCTexture2DPixelFormat_RGBA8888
+//                                                       pixelsWide:width
+//                                                       pixelsHigh:height
+//                                                      contentSize:CGSizeMake(width,height)
+        
+        Texture2D *texture = new Texture2D;
+        texture->initWithData(baseAddress, 0, Texture2D::PixelFormat::BGRA8888, width, height, cocos2d::Size(width,height));
+        texture->autorelease();
+        
+        /*We unlock the  image buffer*/
+        CVPixelBufferUnlockBaseAddress(imageBuffer,0);
+        
+        this->initWithTexture(texture, 16);
+        // schedule texture updates for the frame duration (1/freq)
+        float nominalFrameRate = videoTrack.nominalFrameRate;
+        this->schedule(schedule_selector(VideoSprite::updateTexture), 1.0 / nominalFrameRate);
     } while (0);
     return ret;
+}
+
+void VideoSprite::updateTexture(float dt)
+{
+
+    
+    if (assetReader.status == AVAssetReaderStatusCompleted) {
+        // this texture should repeat from the beginning
+        this->rewindAssetReader();
+    }
+    CMSampleBufferRef sampleBuffer = [trackOutput copyNextSampleBuffer];
+    CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
+    CVPixelBufferLockBaseAddress(imageBuffer,0);
+    /*Get information about the image*/
+    uint8_t *baseAddress = (uint8_t *)CVPixelBufferGetBaseAddress(imageBuffer);
+//    size_t bytesPerRow = CVPixelBufferGetBytesPerRow(imageBuffer);
+    size_t width = CVPixelBufferGetWidth(imageBuffer);
+    size_t height = CVPixelBufferGetHeight(imageBuffer);
+    
+    // update the texture
+    glBindTexture(GL_TEXTURE_2D, this->getTexture()->getName());
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, baseAddress);
+    /*We unlock the  image buffer*/
+    CVPixelBufferUnlockBaseAddress(imageBuffer,0);
+//    [sampleBuffer release];
+}
+
+void VideoSprite::rewindAssetReader()
+{
+    NSDictionary *settings = [NSDictionary dictionaryWithObjectsAndKeys:
+                              [NSNumber numberWithInt:kCVPixelFormatType_32BGRA],
+                              (NSString*)kCVPixelBufferPixelFormatTypeKey,
+                              nil];
+    trackOutput = nil;
+    trackOutput = [AVAssetReaderTrackOutput assetReaderTrackOutputWithTrack:videoTrack outputSettings:settings];
+    
+    NSError *error  = [[NSError alloc] autorelease];
+    assetReader = nil;
+    assetReader = [AVAssetReader assetReaderWithAsset:asset error:&error];
+    [assetReader addOutput:trackOutput];
+    [assetReader startReading];
 }

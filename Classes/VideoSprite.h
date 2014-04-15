@@ -29,9 +29,10 @@ public:
     
     VideoSprite* createWithVideoFile(const std::string& videoFileName);
     bool initWithVideoFile(const std::string& videoFileName);
-    void updateTexture();
+    void updateTexture(float dt);
     
-    
+protected:
+    void rewindAssetReader();
     
 private:
     VideoSprite();

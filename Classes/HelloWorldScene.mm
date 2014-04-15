@@ -28,9 +28,20 @@ bool HelloWorld::init()
         return false;
     }
     auto winsize = Director::getInstance()->getVisibleSize();
-    VideoSprite* sprite = VideoSprite::createWithVideoFile("nnnn.mp4");
+    VideoSprite* sprite = VideoSprite::createWithFile("nnnn.mp4");
     sprite->setPosition(cocos2d::Point(winsize.width/2, winsize.height/2));
+    sprite->setScale(0.5);
     this->addChild(sprite);
+    
+    auto moveBy = MoveBy::create(1.0, cocos2d::Point(0,100));
+    auto scale = ScaleBy::create(1.0, 1.0);
+    auto spawn = Spawn::create(moveBy, scale,  nil);
+    auto spawn_reverse = spawn->reverse();
+    auto sequence = Sequence::create(spawn, spawn_reverse, nil);
+    auto repeat = RepeatForever::create(sequence);
+    sprite->runAction(repeat);
+    
+    
     
     return true;
 }

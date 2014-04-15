@@ -14,6 +14,7 @@
 #import <AVFoundation/AVAsset.h>
 #import <AVFoundation/AVAssetReader.h>
 #import <AVFoundation/AVAssetReaderOutput.h>
+#import <AVFoundation/AVAudioPlayer.h>
 
 
 #include <iostream>
@@ -27,12 +28,10 @@ class VideoSprite : public Sprite
 public:
     ~VideoSprite();
     
-    static VideoSprite* createWithVideoFile(const std::string& videoFileName);
-    bool initWithVideoFile(const std::string& videoFileName);
+    static VideoSprite* createWithFile(const std::string& videoFileName);
+    bool initWithFile(const std::string& videoFileName);
     void updateTexture(float dt);
     
-    virtual void draw(cocos2d::Renderer *renderer, const kmMat4 &transform, bool transformUpdated) override;
-
 protected:
     void rewindAssetReader();
     
@@ -43,6 +42,7 @@ private:
     AVAssetTrack *videoTrack;
     AVAssetReader *assetReader;
     AVAssetReaderTrackOutput *trackOutput;
+    AVAudioPlayer *player;
 };
 
 #endif /* defined(__MyCppGame__VideoSprite__) */

@@ -25,9 +25,9 @@
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		288765A50DF7441C002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765A40DF7441C002DB57D /* CoreGraphics.framework */; };
+		299E2CB418FD348C0035622F /* video_20140329_134943.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 299E2CB318FD348C0035622F /* video_20140329_134943.mp4 */; };
 		29BE6BBA18FCC62A00222CA0 /* VideoSprite.mm in Sources */ = {isa = PBXBuildFile; fileRef = 29BE6BB818FCC62A00222CA0 /* VideoSprite.mm */; };
 		29BE6BBE18FCCF1A00222CA0 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29BE6BBD18FCCF1A00222CA0 /* CoreMedia.framework */; };
-		29BE6BC018FCD17000222CA0 /* nnnn.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 29BE6BBF18FCD17000222CA0 /* nnnn.mp4 */; };
 		29BE6BC218FCD19400222CA0 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29BE6BC118FCD19400222CA0 /* CoreVideo.framework */; };
 		503AE0F817EB97AB00D1A890 /* Icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 503AE0F617EB97AB00D1A890 /* Icon.icns */; };
 		503AE10017EB989F00D1A890 /* AppController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 503AE0FB17EB989F00D1A890 /* AppController.mm */; };
@@ -232,10 +232,10 @@
 		1D6058910D05DD3D006BFB54 /* MyCppGame iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "MyCppGame iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		288765A40DF7441C002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		299E2CB318FD348C0035622F /* video_20140329_134943.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = video_20140329_134943.mp4; sourceTree = "<group>"; };
 		29BE6BB818FCC62A00222CA0 /* VideoSprite.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = VideoSprite.mm; path = ../Classes/VideoSprite.mm; sourceTree = "<group>"; };
 		29BE6BB918FCC62A00222CA0 /* VideoSprite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VideoSprite.h; path = ../Classes/VideoSprite.h; sourceTree = "<group>"; };
 		29BE6BBD18FCCF1A00222CA0 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS7.1.sdk/System/Library/Frameworks/CoreMedia.framework; sourceTree = DEVELOPER_DIR; };
-		29BE6BBF18FCD17000222CA0 /* nnnn.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; name = nnnn.mp4; path = ../../../Movies/nnnn.mp4; sourceTree = "<group>"; };
 		29BE6BC118FCD19400222CA0 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS7.1.sdk/System/Library/Frameworks/CoreVideo.framework; sourceTree = DEVELOPER_DIR; };
 		29BE6BC318FD006700222CA0 /* VideoSpriteImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = VideoSpriteImpl.h; path = ../Classes/VideoSpriteImpl.h; sourceTree = "<group>"; };
 		503AE0F617EB97AB00D1A890 /* Icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Icon.icns; sourceTree = "<group>"; };
@@ -472,7 +472,7 @@
 		78C7DDAA14EBA5050085D0C2 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				29BE6BBF18FCD17000222CA0 /* nnnn.mp4 */,
+				299E2CB318FD348C0035622F /* video_20140329_134943.mp4 */,
 				1AFAF8B916D35E4900DB1158 /* CloseNormal.png */,
 				1AFAF8BA16D35E4900DB1158 /* CloseSelected.png */,
 				1AFAF8BB16D35E4900DB1158 /* HelloWorld.png */,
@@ -648,7 +648,6 @@
 				5087E78117EB970100C73F5D /* Icon-120.png in Resources */,
 				5087E78617EB970100C73F5D /* Icon-76.png in Resources */,
 				5087E77F17EB970100C73F5D /* Default@2x.png in Resources */,
-				29BE6BC018FCD17000222CA0 /* nnnn.mp4 in Resources */,
 				50EF629917ECD46A001EB2F8 /* Icon-100.png in Resources */,
 				1AFAF8BC16D35E4900DB1158 /* CloseNormal.png in Resources */,
 				5087E78317EB970100C73F5D /* Icon-152.png in Resources */,
@@ -656,6 +655,7 @@
 				5087E78517EB970100C73F5D /* Icon-72.png in Resources */,
 				1AFAF8BD16D35E4900DB1158 /* CloseSelected.png in Resources */,
 				50EF62A317ECD613001EB2F8 /* Icon-50.png in Resources */,
+				299E2CB418FD348C0035622F /* video_20140329_134943.mp4 in Resources */,
 				5087E78017EB970100C73F5D /* Icon-114.png in Resources */,
 				1AFAF8BE16D35E4900DB1158 /* HelloWorld.png in Resources */,
 				50EF62A217ECD613001EB2F8 /* Icon-29.png in Resources */,

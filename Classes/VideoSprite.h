@@ -44,7 +44,7 @@ public:
     virtual void initAudioTrack(const std::string& videoFileName);
     virtual VideoSampler getVideoNextSampleBuffer();
     virtual float getVideoFrameRate();
-    virtual void playAudio();
+    virtual void playAudio(float delay);
     virtual void rewindVideo();
     
 protected:
@@ -58,6 +58,9 @@ private:
     AVAssetReader *assetReader;
     AVAssetReaderTrackOutput *trackOutput;
     AVAudioPlayer *player;
+    
+    float _audioStartTime;
+    float _audioDuration;
 };
 
 #endif /* defined(__MyCppGame__VideoSprite__) */

@@ -71,17 +71,17 @@ bool VideoSprite::initWithFile(const std::string &videoFileName)
         this->initWithTexture(texture, cocos2d::Rect(0,0,sampler.width,sampler.height));
         
         
-        float nominalFrameRate = this->getVideoFrameRate();
+        float videoFrameRate = this->getVideoFrameRate();
         
-
-        this->schedule(schedule_selector(VideoSprite::updateTexture), 1.0 / nominalFrameRate);
+        this->playAudio(1.0f / videoFrameRate);
+        this->schedule(schedule_selector(VideoSprite::updateTexture), 1.0 / videoFrameRate);
     } while (0);
     return ret;
 }
 
 float VideoSprite::getVideoFrameRate()
 {
-    float frameRate = videoTrack.nominalFrameRate;
+    float frameRate = videoTrack.nominalFrameRate + 2;
     return frameRate;
 }
 
@@ -90,6 +90,8 @@ void VideoSprite::rewindVideo()
     if (assetReader.status == AVAssetReaderStatusCompleted) {
         // this texture should repeat from the beginning
         this->rewindAssetReader();
+        this->getVideoNextSampleBuffer();
+        this->playAudio(0);
     }
 }
 
@@ -113,14 +115,15 @@ void VideoSprite::updateTexture(float dt)
                  sampler.data);
     
 
-    this->playAudio();
     
 }
 
-void VideoSprite::playAudio()
+void VideoSprite::playAudio(float delay)
 {
     if (![player isPlaying]) {
-        [player play];
+        NSTimeInterval now = player.deviceCurrentTime;
+        now = now + delay;
+        [player playAtTime:now];
     }
 }
 
@@ -162,6 +165,9 @@ void VideoSprite::initAudioTrack(const std::string& videoFileName)
     NSError *error  = [[NSError alloc] autorelease];
     player = [[AVAudioPlayer alloc] initWithContentsOfURL:fileURL error:&error];
     player.numberOfLoops = 0;
+    
+    _audioStartTime = player.currentTime;
+    _audioDuration = player.duration;
 }
 
 VideoSampler VideoSprite::getVideoNextSampleBuffer()

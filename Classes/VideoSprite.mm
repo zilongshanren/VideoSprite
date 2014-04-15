@@ -66,10 +66,12 @@ bool VideoSprite::initWithFile(const std::string &videoFileName)
                               cocos2d::Size(sampler.width,sampler.height));
         texture->autorelease();
         
-      
         
         this->initWithTexture(texture, cocos2d::Rect(0,0,sampler.width,sampler.height));
         
+        //you must call this function to free the data;
+        this->freeSamplerData(sampler.dataNeedToBeFree);
+
         
         float videoFrameRate = this->getVideoFrameRate();
         
@@ -77,6 +79,11 @@ bool VideoSprite::initWithFile(const std::string &videoFileName)
         this->schedule(schedule_selector(VideoSprite::updateTexture), 1.0 / videoFrameRate);
     } while (0);
     return ret;
+}
+
+void VideoSprite::freeSamplerData(const void* buffer)
+{
+    [(id)buffer release];
 }
 
 float VideoSprite::getVideoFrameRate()
@@ -114,6 +121,8 @@ void VideoSprite::updateTexture(float dt)
                  GL_UNSIGNED_BYTE,
                  sampler.data);
     
+    //you must call this function to free the data;
+    this->freeSamplerData(sampler.dataNeedToBeFree);
 
     
 }
@@ -186,10 +195,9 @@ VideoSampler VideoSprite::getVideoNextSampleBuffer()
     sampler.dataLen = bytesPerRow * height;
     sampler.width = (GLint)width;
     sampler.height = (GLint)height;
-    
+    sampler.dataNeedToBeFree = sampleBuffer;
     /*We unlock the  image buffer*/
     CVPixelBufferUnlockBaseAddress(imageBuffer,0);
-    [(id)sampleBuffer release];
     
     return sampler;
 }

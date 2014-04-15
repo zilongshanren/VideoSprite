@@ -26,6 +26,7 @@ typedef struct tVideoSampler
     ssize_t  dataLen;
     GLint width;
     GLint height;
+    const void* dataNeedToBeFree;
 }VideoSampler;
 
 
@@ -46,6 +47,7 @@ public:
     virtual float getVideoFrameRate();
     virtual void playAudio(float delay);
     virtual void rewindVideo();
+    virtual void freeSamplerData(const void* buffer);
     
 protected:
     void rewindAssetReader();

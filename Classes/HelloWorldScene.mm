@@ -2,6 +2,7 @@
 #include "VideoSprite.h"
 
 USING_NS_CC;
+using namespace cocos2d::ui;
 
 Scene* HelloWorld::createScene()
 {
@@ -28,10 +29,10 @@ bool HelloWorld::init()
         return false;
     }
     auto winsize = Director::getInstance()->getVisibleSize();
-    VideoSprite* sprite = VideoSprite::createWithFile("nnnn.mp4");
-    sprite->setPosition(cocos2d::Point(winsize.width/2, winsize.height/2));
-    sprite->setScale(1.2);
-    this->addChild(sprite);
+     _videoSprite = VideoSprite::createWithFile("nnnn.mp4");
+    _videoSprite->setPosition(cocos2d::Point(winsize.width/2, winsize.height/2));
+    _videoSprite->setScale(1.2);
+    this->addChild(_videoSprite);
     
     auto moveBy = MoveBy::create(1.0, cocos2d::Point(0,100));
     auto scale = ScaleBy::create(1.0, 1.0);
@@ -39,11 +40,23 @@ bool HelloWorld::init()
     auto spawn_reverse = spawn->reverse();
     auto sequence = Sequence::create(spawn, spawn_reverse, nil);
     auto repeat = RepeatForever::create(sequence);
-    sprite->runAction(repeat);
+    _videoSprite->runAction(repeat);
+    
+    using cocos2d::ui::Button;
+    
+    Button *playBtn = Button::create("CloseNormal.png");
+    playBtn->setPosition(cocos2d::Point(50,50));
+    playBtn->addTouchEventListener(this, toucheventselector(HelloWorld::onPlayVideo));
+    this->addChild(playBtn);
     
     
     
     return true;
+}
+
+void HelloWorld::onPlayVideo(cocos2d::Ref *ref, TouchEventType type)
+{
+    _videoSprite->play();
 }
 
 

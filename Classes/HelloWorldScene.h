@@ -2,8 +2,10 @@
 #define __HELLOWORLD_SCENE_H__
 
 #include "cocos2d.h"
+#include "ui/CocosGUI.h"
 
 class VideoSprite;
+using cocos2d::ui::TouchEventType;
 
 class HelloWorld : public cocos2d::Layer
 {
@@ -16,6 +18,8 @@ public:
     
     // a selector callback
     void menuCloseCallback(cocos2d::Ref* pSender);
+    
+    void onPlayVideo(Ref* ref, TouchEventType type);
     
     // implement the "static create()" method manually
     CREATE_FUNC(HelloWorld);

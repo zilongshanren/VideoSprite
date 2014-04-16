@@ -41,6 +41,11 @@ public:
     bool initWithFile(const std::string& videoFileName);
     void updateTexture(float dt);
     
+    void play();
+    void pause();
+    void resume();
+    void stop();
+    
     virtual void initVideoTrack(const std::string& videoFileName);
     virtual void initAudioTrack(const std::string& videoFileName);
     virtual VideoSampler getVideoNextSampleBuffer();
@@ -63,6 +68,7 @@ private:
     
     float _audioStartTime;
     float _audioDuration;
+    float _frameRate;
 };
 
 #endif /* defined(__MyCppGame__VideoSprite__) */

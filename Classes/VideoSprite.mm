@@ -73,10 +73,9 @@ bool VideoSprite::initWithFile(const std::string &videoFileName)
         this->freeSamplerData(sampler.dataNeedToBeFree);
 
         
-        float videoFrameRate = this->getVideoFrameRate();
-        
-        this->playAudio(1.0f / videoFrameRate);
-        this->schedule(schedule_selector(VideoSprite::updateTexture), 1.0 / videoFrameRate);
+        _frameRate = this->getVideoFrameRate();
+        this->play();
+        this->schedule(schedule_selector(VideoSprite::updateTexture), 1.0 / _frameRate);
     } while (0);
     return ret;
 }
@@ -97,7 +96,6 @@ void VideoSprite::rewindVideo()
     if (assetReader.status == AVAssetReaderStatusCompleted) {
         // this texture should repeat from the beginning
         this->rewindAssetReader();
-        this->getVideoNextSampleBuffer();
         this->playAudio(0);
     }
 }
@@ -138,6 +136,7 @@ void VideoSprite::playAudio(float delay)
 
 void VideoSprite::rewindAssetReader()
 {
+   
     NSDictionary *settings = [NSDictionary dictionaryWithObjectsAndKeys:
                               [NSNumber numberWithInt:kCVPixelFormatType_32BGRA],
                               (NSString*)kCVPixelBufferPixelFormatTypeKey,
@@ -200,4 +199,25 @@ VideoSampler VideoSprite::getVideoNextSampleBuffer()
     CVPixelBufferUnlockBaseAddress(imageBuffer,0);
     
     return sampler;
+}
+
+void VideoSprite::play()
+{
+    this->playAudio(1.0f / _frameRate);
+    Director::getInstance()->getScheduler()->resumeTarget(this);
+}
+
+void VideoSprite::resume()
+{
+    
+}
+
+void VideoSprite::pause()
+{
+    
+}
+
+void VideoSprite::stop()
+{
+    
 }
